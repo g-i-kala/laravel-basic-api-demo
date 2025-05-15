@@ -12,13 +12,13 @@ return new class () extends Migration {
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->strin('name');
-            $table->strin('type'); // Individual or Business
-            $table->strin('email');
-            $table->strin('address');
-            $table->strin('city');
-            $table->strin('state');
-            $table->strin('postal_code');
+            $table->string('name');
+            $table->string('type'); // Individual or Business
+            $table->string('email');
+            $table->string('address');
+            $table->string('city');
+            $table->string('state');
+            $table->string('postal_code');
             $table->timestamps();
         });
     }
