@@ -19,12 +19,13 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $filter = new InvoicesFilter();
-        $queryItems = $filter->transform($request); // ['column', 'operator', 'value']
+        $qfilterItems = $filter->transform($request); // ['column', 'operator', 'value']
 
-        if (count($queryItems) == 0) {
+        if (count($qfilterItems) == 0) {
             return new InvoiceCollection(Invoice::paginate());
         } else {
-            $invoice = Invoice::where($queryItems)->paginate();
+            dd('kupa');
+            $invoice = Invoice::where($filterItems)->paginate();
             return new InvoiceCollection($invoice->appends($request->query()));
         }
     }
