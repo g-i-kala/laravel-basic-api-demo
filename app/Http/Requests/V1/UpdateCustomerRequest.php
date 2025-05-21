@@ -4,13 +4,12 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCustomerRequest extends FormRequest
+class UpdateCustomerRequest extends ApiRequest
 {
     /**
-        * Define fields that are to be prepared for validation.
-        */
+    * Define fields that are to be prepared for validation.
+    */
     protected array $normalize = ['postalCode', 'name', 'type', 'email', 'address', 'city', 'state'];
 
     /**
@@ -36,7 +35,7 @@ class UpdateCustomerRequest extends FormRequest
             'address' => ['required'],
             'city' => ['required'],
             'state' => ['required'],
-            'postalCode' => ['required']
+            'postal_code' => ['required']
         ];
         } else {
             return [
@@ -46,7 +45,7 @@ class UpdateCustomerRequest extends FormRequest
             'address' => ['sometimes', 'required'],
             'city' => ['sometimes', 'required'],
             'state' => ['sometimes', 'required'],
-            'postalCode' => ['sometimes', 'required']
+            'postal_code' => ['sometimes', 'required']
         ];
         }
 

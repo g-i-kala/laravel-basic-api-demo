@@ -2,16 +2,16 @@
 
 namespace App\Http\Requests\V1;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\ApiRequest;
 
-class UpdateInvoiceRequest extends FormRequest
+class UpdateInvoiceRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdateInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'amount' => ['required'],
+            'status' => ['required', 'integer'],
+            'billedDate' => ['required'],
+            'paidDate' => ['required']
         ];
     }
 }

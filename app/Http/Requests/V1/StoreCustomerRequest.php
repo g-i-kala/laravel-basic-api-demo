@@ -3,10 +3,15 @@
 namespace App\Http\Requests\V1;
 
 use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\V1\ApiRequest;
 
-class StoreCustomerRequest extends FormRequest
+class StoreCustomerRequest extends ApiRequest
 {
+    /**
+       * Define fields that are to be prepared for validation.
+       */
+    protected array $normalize = ['postalCode', 'name', 'type', 'email', 'address', 'city', 'state'];
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -29,21 +34,8 @@ class StoreCustomerRequest extends FormRequest
             'address' => ['required'],
             'city' => ['required'],
             'state' => ['required'],
-            'postalCode' => ['required']
+            'postal_code' => ['required']
         ];
     }
 
-    protected function prepareForValidation()
-    {
-
-        $this->merge([
-            'postal_code' => trim($this->input('postalCode')),
-            'name'        => trim($this->input('name')),
-            'type'        => trim($this->input('type')),
-            'email'       => trim($this->input('email')),
-            'address'     => trim($this->input('address')),
-            'city'        => trim($this->input('city')),
-            'state'       => trim($this->input('state')),
-    ]);
-    }
 }
