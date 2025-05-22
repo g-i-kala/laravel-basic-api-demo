@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Models\Invoice;
 use App\Filters\InvoicesFilter;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\BulkStoreInvoiceRequest;
 use App\Http\Requests\V1\StoreInvoiceRequest;
 use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Requests\V1\UpdateInvoiceRequest;
@@ -19,12 +20,11 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $filter = new InvoicesFilter();
-        $qfilterItems = $filter->transform($request); // ['column', 'operator', 'value']
+        $filterItems = $filter->transform($request); // ['column', 'operator', 'value']
 
-        if (count($qfilterItems) == 0) {
+        if (count($filterItems) == 0) {
             return new InvoiceCollection(Invoice::paginate());
         } else {
-            dd('kupa');
             $invoice = Invoice::where($filterItems)->paginate();
             return new InvoiceCollection($invoice->appends($request->query()));
         }
@@ -36,6 +36,15 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request)
     {
         return new InvoiceResource(Invoice::create($request->validated()));
+    }
+
+    public function bulkStore(BulkStoreInvoiceRequest $request)
+    {
+        // $job = Auth::user()->employer->jobs()->create(Arr::except($attributes, 'tags'));
+
+        Invoice::insert($request->validated());
+
+        return response()->json(['message' => 'Invoices created successfully']);
     }
 
     /**
@@ -52,6 +61,8 @@ class InvoiceController extends Controller
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
         $invoice->update($request->validated());
+
+        return response()->json(['message' => 'Invoices updated successfully']);
     }
 
     /**

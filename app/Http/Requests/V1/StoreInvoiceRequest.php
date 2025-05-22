@@ -30,9 +30,9 @@ class StoreInvoiceRequest extends ApiRequest
         return [
             'customer_id' => ['required'],
             'amount'     => ['required', 'numeric', 'min:0'],
-            'status'     => ['required', Rule::in(['B', 'P', 'V'])],
-            'billed_date' => ['required', 'date'],
-            'paid_date'   => ['nullable', 'date', 'after_or_equal:billedDate'],
+            'status'     => ['required', Rule::in(['B', 'P', 'V', 'b', 'p', 'v'])],
+            'billed_date' => ['required', 'date_format:Y-m-d H:i:s'],
+            'paid_date'   => ['nullable', 'date_format:Y-m-d H:i:s', 'after_or_equal:billed_date'],
         ];
     }
 }
