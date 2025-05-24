@@ -17,7 +17,7 @@ class StoreInvoiceRequest extends ApiRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->tokenCan('store');
     }
 
     /**
