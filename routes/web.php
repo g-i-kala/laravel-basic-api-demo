@@ -1,38 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/setup', function () {
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-    $credentials = [
-        'email' => 'admin@example.com',
-        'password' => 'password'
-    ];
-
-    if (!Auth::attempt($credentials)) {
-        $user = new \App\Models\User();
-
-        $user->name = 'Admin';
-        $user->email = $credentials['email'];
-        $user->password = bcrypt($credentials['password']);
-
-        $user->save();
-    };
-
-    $user = Auth::user();
-
-    $adminToken = $user->createToken('admin-token', ['store', 'update', 'delete']);
-    $updateToken = $user->createToken('update-token', ['store', 'update']);
-    $basicToken = $user->createToken('basic-token', []);
-
-    return [
-        'admin' => $adminToken->plainTextToken,
-        'update' => $updateToken->plainTextToken,
-        'basic' => $basicToken->plainTextToken
-    ];
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+require __DIR__.'/auth.php';
