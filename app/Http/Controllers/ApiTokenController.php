@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ApiTokenController extends Controller
@@ -27,7 +28,8 @@ class ApiTokenController extends Controller
      */
     public function store(Request $request)
     {
-        $token = 'its your token. 666';
+        $token = $request->user()->createApiToken(['store', 'update']);
+
         return back()
             ->with('apiToken', $token)
             ->with('showTokenModal', true);
@@ -60,8 +62,11 @@ class ApiTokenController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        dd('dump the token');
+        $request->user()->tokens()->where('name', 'api-token')->delete();
+        return back()
+            ->with('message', 'Deleted suceffuly')
+            ->with('deletedTokenModal', true);
     }
 }
