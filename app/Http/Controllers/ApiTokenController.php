@@ -27,7 +27,10 @@ class ApiTokenController extends Controller
      */
     public function store(Request $request)
     {
-        dd('here we create a doken');
+        $token = 'its your token. 666';
+        return back()
+            ->with('apiToken', $token)
+            ->with('showTokenModal', true);
     }
 
     /**
