@@ -27,7 +27,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+ * The attributes that should be hidden for serialization.
      *
      * @var list<string>
      */
@@ -47,5 +47,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function createApiToken($abilites = ['*'])
+    {
+        return $this->createToken('api-token', $abilites)->plainTextToken;
     }
 }
