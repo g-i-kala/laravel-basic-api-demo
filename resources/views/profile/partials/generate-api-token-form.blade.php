@@ -68,7 +68,7 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is token, access to your account through API will be unavailable.') }}
+                {{ __('Once your token id deleted, access to your account through API will be unavailable.') }}
             </p>
 
             <div class="mt-6 flex justify-end">
