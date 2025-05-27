@@ -2,28 +2,34 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\User;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use App\Filters\CustomersFilter;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\StoreCustomerRequest;
 use App\Http\Resources\V1\CustomerResource;
-use App\Http\Requests\V1\UpdateCustomerRequest;
 use App\Http\Resources\V1\CustomerCollection;
+use App\Http\Requests\V1\StoreCustomerRequest;
+use App\Http\Requests\V1\UpdateCustomerRequest;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CustomerController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Customer::class);
+
         $filter = new CustomersFilter();
         $filterItems = $filter->transform($request); // ['column', 'operator', 'value']
 
         $includeInvoices = $request->query('includeInvoices');
 
-        $customers = Customer::where($filterItems);
+        $customers = Customer::where('user_id', $request->user()->id)
+            ->where($filterItems);
 
         if ($includeInvoices) {
             $customers = $customers->with('invoices');
@@ -46,6 +52,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $this->authorize('view', $customer);
 
         $includeInvoices = request()->query('includeInvoices');
         if ($includeInvoices) {
