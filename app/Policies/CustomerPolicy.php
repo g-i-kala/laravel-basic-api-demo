@@ -37,7 +37,7 @@ class CustomerPolicy
      */
     public function update(User $user, Customer $customer): bool
     {
-        return false;
+        return $user->id === $customer->user_id;
     }
 
     /**

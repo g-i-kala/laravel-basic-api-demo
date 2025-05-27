@@ -12,6 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
+            $table->string('user_id');
             $table->string('name');
             $table->string('type'); // Individual or Business
             $table->string('email');
@@ -20,6 +21,7 @@ return new class () extends Migration {
             $table->string('state');
             $table->string('postal_code');
             $table->timestamps();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
         });
     }
 
