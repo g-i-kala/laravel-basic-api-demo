@@ -52,8 +52,6 @@ class InvoiceController extends Controller
 
     public function bulkStore(BulkStoreInvoiceRequest $request)
     {
-        // $job = Auth::user()->employer->jobs()->create(Arr::except($attributes, 'tags'));
-
         Invoice::insert($request->validated());
 
         return response()->json(['message' => 'Invoices created successfully']);
