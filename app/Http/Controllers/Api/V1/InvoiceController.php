@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Invoice;
+use App\Models\Customer;
+use Illuminate\Http\Request;
 use App\Filters\InvoicesFilter;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\BulkStoreInvoiceRequest;
-use App\Http\Requests\V1\StoreInvoiceRequest;
 use App\Http\Resources\V1\InvoiceResource;
-use App\Http\Requests\V1\UpdateInvoiceRequest;
 use App\Http\Resources\V1\InvoiceCollection;
+use App\Http\Requests\V1\StoreInvoiceRequest;
+use App\Http\Requests\V1\UpdateInvoiceRequest;
+use App\Http\Requests\V1\BulkStoreInvoiceRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
@@ -42,6 +43,10 @@ class InvoiceController extends Controller
      */
     public function store(StoreInvoiceRequest $request)
     {
+        // find the customer by the id from request
+        $customer = Customer::findOrFail($request->input('customer_id'));
+        $this->authorize('view', $customer);
+
         return new InvoiceResource(Invoice::create($request->validated()));
     }
 

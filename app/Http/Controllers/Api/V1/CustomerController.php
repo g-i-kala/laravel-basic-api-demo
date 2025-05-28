@@ -67,6 +67,7 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
+        $this->authorize('update', $customer);
         $customer->update($request->validated());
     }
 
