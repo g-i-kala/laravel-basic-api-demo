@@ -10,23 +10,30 @@ use App\Http\Requests\V1\StoreInvoiceRequest;
 use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Requests\V1\UpdateInvoiceRequest;
 use App\Http\Resources\V1\InvoiceCollection;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Invoice::class);
+
         $filter = new InvoicesFilter();
         $filterItems = $filter->transform($request); // ['column', 'operator', 'value']
 
+        $custsomerIds = $request->user()->customers()->pluck('id');
+        $invoices = Invoice::whereIn('customer_id', $custsomerIds);
+
         if (count($filterItems) == 0) {
-            return new InvoiceCollection(Invoice::paginate());
+            return new InvoiceCollection($invoices->paginate());
         } else {
-            $invoice = Invoice::where($filterItems)->paginate();
-            return new InvoiceCollection($invoice->appends($request->query()));
+            $filteredInvoices = $invoices->where($filterItems)->paginate();
+            return new InvoiceCollection($filteredInvoices->appends($request->query()));
         }
     }
 
@@ -52,6 +59,7 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
+        $this->authorize('view', $invoice);
         return new InvoiceResource($invoice);
     }
 
@@ -60,6 +68,7 @@ class InvoiceController extends Controller
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
+        $this->authorize('update', $invoice);
         $invoice->update($request->validated());
 
         return response()->json(['message' => 'Invoices updated successfully']);
