@@ -44,7 +44,12 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        return new CustomerResource(Customer::create($request->validated()));
+        $this->authorize('create', Customer::class);
+
+        $data = $request->validated();
+        $data['user_id'] = $request->user()->id;
+
+        return new CustomerResource(Customer::create($data));
     }
 
     /**
