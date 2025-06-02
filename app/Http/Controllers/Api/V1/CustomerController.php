@@ -74,6 +74,7 @@ class CustomerController extends Controller
     {
         $this->authorize('update', $customer);
         $customer->update($request->validated());
+        return new CustomerResource($customer->fresh());
     }
 
     /**

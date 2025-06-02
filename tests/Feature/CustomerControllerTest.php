@@ -59,3 +59,55 @@ it('creates a customer in the database', function () {
     ]);
 
 });
+
+it('shows the customer via id belonging to the logged in user', function () {
+    $userA = User::factory()->create();
+    $customersUserA = Customer::factory()->for($userA)->count(2)->create();
+
+    actingAs($userA, 'sanctum');
+
+    $customerId = $customersUserA->first()->id;
+
+    $response = get('/api/v1/customers/'.$customerId);
+    $response->assertJsonPath('data.id', $customerId);
+
+});
+
+it('can update the customer data with PUT request', function () {
+    $userA = User::factory()->create();
+    $customersUserA = Customer::factory()->for($userA)->count(2)->create();
+
+    Sanctum::actingAs($userA, ['update']);
+
+    $customerId = $customersUserA->first()->id;
+
+    $newCustomerData = [
+        "name" => "Testing Tess.",
+        "type" => "I",
+        "email" => "testoria@test.com",
+        "address" => "167 Testerion",
+        "city" => "Testicle",
+        "state" => "Testax",
+        "postalCode" => "666",
+    ];
+
+    $response = put('/api/v1/customers/'.$customerId, $newCustomerData);
+    $response->assertJson([
+        'data' => [
+            "name" => "Testing Tess.",
+            "type" => "I",
+            "email" => "testoria@test.com",
+            "address" => "167 Testerion",
+            "city" => "Testicle",
+            "state" => "Testax",
+            "postalCode" => "666",
+            ]
+        ]);
+
+    $this->assertDatabaseHas('customers', [
+        'id' => $userA->id,
+        'name' => 'Testing Tess.',
+        "email" => "testoria@test.com",
+    ]);
+
+});
