@@ -5,7 +5,7 @@ use App\Models\Customer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 
-use function Pest\Laravel\{actingAs, get, post, put, delete};
+use function Pest\Laravel\{actingAs, get, post, put, patch, delete};
 
 uses(RefreshDatabase::class);
 
@@ -68,7 +68,7 @@ it('shows the customer via id belonging to the logged in user', function () {
 
     $customerId = $customersUserA->first()->id;
 
-    $response = get('/api/v1/customers/'.$customerId);
+    $response = get('/api/v1/customers/' . $customerId);
     $response->assertJsonPath('data.id', $customerId);
 
 });
@@ -91,7 +91,7 @@ it('can update the customer data with PUT request', function () {
         "postalCode" => "666",
     ];
 
-    $response = put('/api/v1/customers/'.$customerId, $newCustomerData);
+    $response = put('/api/v1/customers/' . $customerId, $newCustomerData);
     $response->assertJson([
         'data' => [
             "name" => "Testing Tess.",
@@ -108,6 +108,56 @@ it('can update the customer data with PUT request', function () {
         'id' => $userA->id,
         'name' => 'Testing Tess.',
         "email" => "testoria@test.com",
+    ]);
+
+});
+
+it('can update choosen customer fields with PATCH request', function () {
+    $userA = User::factory()->create();
+    $customersUserA = Customer::factory()->for($userA)->count(2)->create();
+
+    Sanctum::actingAs($userA, ['update']);
+
+    $customerId = $customersUserA->first()->id;
+
+    $newCustomerData = [
+        "name" => "Testing Tess.",
+        "email" => "testoria@test.com",
+        "city" => "Testicle",
+        "postalCode" => "666",
+    ];
+
+    $response = patch('/api/v1/customers/' . $customerId, $newCustomerData);
+    $response->assertJson([
+        'data' => [
+            "name" => "Testing Tess.",
+            "email" => "testoria@test.com",
+            "city" => "Testicle",
+            "postalCode" => "666",
+            ]
+        ]);
+
+    $this->assertDatabaseHas('customers', [
+        'id' => $userA->id,
+        'name' => 'Testing Tess.',
+        "email" => "testoria@test.com",
+    ]);
+
+});
+
+it('can delete a customer', function () {
+    $userA = User::factory()->create();
+    $customersUserA = Customer::factory()->for($userA)->create();
+
+    actingAs($userA, 'sanctum');
+
+    $customerId = $customersUserA->first()->id;
+
+    $response = delete('/api/v1/customers/' . $customerId);
+    expect($response->status())->toBe(204);
+
+    $this->assertDatabaseMissing('customers', [
+        'id' => $customerId
     ]);
 
 });
