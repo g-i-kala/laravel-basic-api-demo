@@ -30,17 +30,8 @@ beforeEach(function () {
 it('creates a customer in the database', function () {
 
     Sanctum::actingAs($this->user, ['store']);
-    $newCustomer = [
-        "name" => "Testing Tess.",
-        "type" => "I",
-        "email" => "testoria@test.com",
-        "address" => "167 Testerion",
-        "city" => "Testicle",
-        "state" => "Testax",
-        "postalCode" => "666",
-    ];
 
-    $response = post("/api/v1/customers/", $newCustomer);
+    $response = post("/api/v1/customers/", $this->newCustomer);
 
     expect($response->status())->toBe(201);
 

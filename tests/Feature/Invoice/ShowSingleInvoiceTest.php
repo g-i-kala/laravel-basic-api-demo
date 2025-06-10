@@ -17,32 +17,23 @@ beforeEach(function () {
 
 // Happy path
 
-it('can get invoices for authentificated user', function () {
+it('can get a single invoice for authentificated user', function () {
 
     actingAs($this->userA, 'sanctum');
+    $invoiceId = $this->invoicesCustomerA->first()->id;
 
-    $response = get("/api/v1/invoices/");
-    $response->assertOk();
+    $response = get("/api/v1/invoices/" . $invoiceId);
 
     expect($response->status())->toBe(200);
+    collect($response->json())
+        ->each(fn ($invoice) => expect($invoice)
+        ->toHaveKeys(['id', 'customerId', 'amount', 'status', 'billedDate', 'paidDate']));
 
-});
-
-it('gets invoices only for the authentificated user', function () {
-    $this->userB = User::factory()->create();
-    $this->customerB = Customer::factory()->for($this->userB)->create();
-    $this->invoicesCustomerB = Invoice::factory()->for($this->customerB)->count(3)->create();
-
-    actingAs($this->userA, 'sanctum');
-
-    $response = get("/api/v1/invoices/");
-
-    expect($response->json('data'))->toHaveCount(5);
 });
 
 // Unhappy path
 
-it('cant get invoice for an unauthentificated user', function () {
+it('cant get an invoice for an unauthentificated user', function () {
     $response = get("/api/v1/invoices/");
     expect($response->status())->toBe(302);
     $response->assertRedirect('/login');
@@ -50,13 +41,15 @@ it('cant get invoice for an unauthentificated user', function () {
 });
 
 
-it('cant get invoices for another user', function () {
+it('cant get an invoices for another user', function () {
     $this->userB = User::factory()->create();
     $this->customerB = Customer::factory()->for($this->userB)->create();
     $this->invoicesCustomerB = Invoice::factory()->for($this->customerB)->count(3)->create();
 
     actingAs($this->userB, 'sanctum');
+    $invoiceIdA = $this->invoicesCustomerA->first()->id;
 
-    $response = get("/api/v1/invoices/");
+    $response = get("/api/v1/invoices/" . $invoiceIdA);
 
+    expect($response->status())->toBe(403);
 });
